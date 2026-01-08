@@ -2,7 +2,7 @@
   <h1 align="center"> unitree_IL_lerobot </h1>
   <h3 align="center"> Unitree Robotics </h3>
   <p align="center">
-    <a href="./README.md"> English </a> | <a href="./docs/README_it.md"> Italiano </a> | <a href="./docs/README_fr.md"> Français </a> | <a href="./docs/README_zh.md"> 中文 </a>
+    <a href="./README.md"> English </a> | <a href="./docs/README_it.md"> Italiano </a> | <a href="./docs/README_fr.md"> Français </a>
   </p>
     <p align="center">
      <a href="https://discord.gg/ZwcVwxv5rq" target="_blank"><img src="https://img.shields.io/badge/-Discord-5865F2?style=flat&logo=Discord&logoColor=white" alt="Unitree LOGO"></a>
@@ -42,7 +42,7 @@
 2. **Comprehensive Documentation**
    - Workspace analysis and architecture deep dive
    - Quick reference guide with troubleshooting
-   - Multi-language support (EN/IT/FR/ZH)
+   - Multi-language support (EN/IT/FR)
 
 ### 🏷️ v0.3
 
@@ -62,18 +62,22 @@
 
 Support `data conversion`, `model deployment`, and `real-world testing` for `G1 + Dex1 + Dex3`.
 
-# 0. 📖 Introduction
+# 0. 📖 What is This?
 
-This repository provides a **complete imitation learning pipeline** for Unitree humanoid robots (G1, Z1) using the [LeRobot](https://github.com/huggingface/lerobot) framework. Train robots through demonstration - from data collection to real-world deployment.
+This repository helps you **teach robots by showing them what to do**. It's a complete system for Unitree robots (G1, Z1) that works from start to finish.
 
-**Key Features:**
-- ✅ Data conversion (JSON → LeRobot format)
-- ✅ Training with multiple policies (ACT, Diffusion, Pi0, Pi05, Groot)
-- ✅ Real-time robot control (30 Hz)
-- ✅ Two simulation options: IsaacLab (GPU) or MuJoCo (CPU)
-- ✅ 11 robot configurations supported
+**What You Can Do:**
+- 🎥 Record yourself doing a task with the robot
+- 🔄 Convert your recordings to a format AI can learn from
+- 🧠 Train an AI model to copy what you did
+- 🤖 Let the robot do the task automatically
+- 💻 Test everything in simulation first (no GPU needed with MuJoCo!)
 
-`❗Tips: If you have any questions, ideas or suggestions, please feel free to raise them at any time. We will do our best to solve and implement them.`
+**Why It's Useful:**
+- No coding needed for data collection
+- Multiple AI models to choose from
+- Works on regular computers (CPU-friendly simulation)
+- Comprehensive guides in English, Italian, and French
 
 ## 🗂️ Repository Structure
 
@@ -85,89 +89,92 @@ This repository provides a **complete imitation learning pipeline** for Unitree 
 | `test/` | Test suite for dataset loading and conversion |
 | `docs/` | Multi-language documentation |
 
-# 1. 📦 Environment Setup
+# 1. 📦 Getting Started
 
-## 1.1 🦾 LeRobot Environment Setup
+## Step 1: Install Basic Requirements
 
-Install the [LeRobot](https://github.com/huggingface/lerobot) framework and dependencies:
+First, set up Python and the AI framework:
 
 ```bash
-# Clone with submodules
+# Clone this repository
 git clone --recurse-submodules https://github.com/karim7tr/unitree_IL_lerobot.git
 cd unitree_IL_lerobot
 
-# If already cloned, update submodules
-git submodule update --init --recursive
-
-# Create conda environment
+# Create Python environment (Python 3.10 required)
 conda create -y -n unitree_lerobot python=3.10
 conda activate unitree_lerobot
 
-# Install dependencies
+# Install core dependencies
 conda install pinocchio -c conda-forge
 conda install ffmpeg=7.1.1 -c conda-forge
 
-# Install LeRobot
+# Install LeRobot (the AI training framework)
 cd unitree_lerobot/lerobot && pip install -e .
 
-# Install unitree_lerobot
+# Install this package
 cd ../../ && pip install -e .
 ```
 
-## 1.2 🕹️ unitree_sdk2_python (For Real Robot)
+## Step 2: Choose Your Simulation (Optional for Testing)
 
-For DDS communication with Unitree robots:
+You have two options:
+
+### Option A: MuJoCo (Recommended - No GPU Needed!) ⭐
+
+Simple physics simulation that runs on any computer:
+
+```bash
+pip install mujoco
+```
+
+**Why choose this:**
+- Works on laptops and regular PCs
+- No expensive GPU required
+- Good for testing and development
+- See [MUJOCO_SIMULATION_GUIDE.md](./MUJOCO_SIMULATION_GUIDE.md) for details
+
+### Option B: IsaacLab (Advanced - GPU Required)
+
+High-end simulation for complex scenarios:
+
+```bash
+# Follow setup at: https://github.com/unitreerobotics/unitree_sim_isaaclab
+```
+
+**Requirements:** NVIDIA GPU with 8GB+ VRAM
+
+## Step 3: For Real Robot (Optional)
+
+If you have a physical Unitree robot:
 
 ```bash
 git clone https://github.com/unitreerobotics/unitree_sdk2_python.git
 cd unitree_sdk2_python && pip install -e .
 ```
 
-## 1.3 🎮 Simulation Setup
+# 2. 🎥 Working With Data
 
-### Option A: IsaacLab (GPU Required)
+## Option 1: Use Example Data
 
-For high-performance simulation with GPU:
-
-```bash
-# Follow instructions at:
-# https://github.com/unitreerobotics/unitree_sim_isaaclab
-```
-
-**Requirements:** NVIDIA GPU with 8GB+ VRAM, CUDA support
-
-### Option B: MuJoCo (CPU-Friendly) ⭐ NEW
-
-For lightweight simulation without GPU:
-
-```bash
-pip install mujoco
-```
-
-**No GPU required!** See [MUJOCO_SIMULATION_GUIDE.md](./MUJOCO_SIMULATION_GUIDE.md) for complete setup.
-
-# 2. ⚙️ Data Collection and Conversion
-
-## 2.1 🖼️ Load Existing Datasets
-
-Load pre-recorded datasets from Hugging Face:
+Try it out with pre-recorded demonstrations:
 
 ```python
 from lerobot.datasets.lerobot_dataset import LeRobotDataset
 
-# Load dataset
+# Load a demo dataset
 dataset = LeRobotDataset(repo_id="unitreerobotics/G1_Dex3_ToastedBread_Dataset")
 
-# Access episode
+# Look at what's inside
+print(f"Dataset has {len(dataset)} frames")
 episode_index = 0
 from_idx = dataset.meta.episodes["dataset_from_index"][episode_index]
 to_idx = dataset.meta.episodes["dataset_to_index"][episode_index]
 
 for step_idx in range(from_idx, to_idx):
-    step = dataset[step_idx]
+    step = dataset[step_idx]  # Each step has images and robot positions
 ```
 
-**Visualization:**
+View it visually:
 
 ```bash
 cd unitree_lerobot/lerobot
@@ -176,320 +183,191 @@ python src/lerobot/scripts/lerobot_dataset_viz.py \
     --episode-index 0
 ```
 
-## 2.2 🔨 Data Collection
+## Option 2: Record Your Own Data
 
-Collect your own data using [avp_teleoperate](https://github.com/unitreerobotics/avp_teleoperate/tree/g1) with Unitree G1 robot.
+1. Use the [avp_teleoperate](https://github.com/unitreerobotics/avp_teleoperate/tree/g1) tool to control your robot
+2. Record yourself doing the task
+3. Your recordings are saved as JSON files with images
 
-**Output format:**
-```
-datasets/
-└── task_name/
-    ├── episode_0001/
-    │   ├── audios/
-    │   ├── colors/
-    │   ├── depths/
-    │   └── data.json
-    ├── episode_0002/
-    └── ...
-```
+## Option 3: Convert Your Data
 
-## 2.3 🛠️ Data Conversion
-
-### Step 1: Sort and Rename
-
-Ensure sequential episode naming:
+Once you have recordings, convert them to the AI-readable format:
 
 ```bash
+# Step 1: Organize your recordings
 python unitree_lerobot/utils/sort_and_rename_folders.py \
-    --data_dir $HOME/datasets/task_name
-```
+    --data_dir $HOME/datasets/my_task
 
-### Step 2: Convert to LeRobot Format
-
-```bash
+# Step 2: Convert to AI format
 python unitree_lerobot/utils/convert_unitree_json_to_lerobot.py \
-    --raw-dir $HOME/datasets/task_name \
-    --repo-id your_name/task_name \
+    --raw-dir $HOME/datasets/my_task \
+    --repo-id myname/my_task \
     --robot_type Unitree_G1_Dex3 \
     --push_to_hub
 ```
 
-**Supported robot types:**
-- `Unitree_Z1_Single`, `Unitree_Z1_Dual`
-- `Unitree_G1_Dex1`, `Unitree_G1_Dex3`
-- `Unitree_G1_Brainco`, `Unitree_G1_Inspire`
-- `Unitree_G1_Dex1_Sim` (for IsaacLab)
-- And 4 more mobile/lift configurations
+**Robot types you can use:**
+- `Unitree_G1_Dex3` - G1 robot with dexterous hands (most common)
+- `Unitree_G1_Dex1` - G1 with simple grippers
+- `Unitree_Z1_Dual` - Desktop dual-arm robot
+- And 8 more configurations (see [QUICK_REFERENCE.md](./QUICK_REFERENCE.md))
 
-# 3. 🚀 Training
+# 3. 🧠 Training the AI
 
-Train policies using LeRobot. See [official LeRobot docs](https://github.com/huggingface/lerobot/tree/main/docs/source) for details.
+Now teach the AI to copy what you demonstrated. Choose a model:
 
-## 3.1 ACT Policy (Fast, Good Baseline)
+## Quick Start (Recommended)
+
+**ACT Model** - Fast training, good results:
 
 ```bash
 cd unitree_lerobot/lerobot
 
 python src/lerobot/scripts/lerobot_train.py \
-    --dataset.repo_id=your_name/task_name \
+    --dataset.repo_id=myname/my_task \
     --policy.type=act \
     --policy.push_to_hub=false
 ```
 
-## 3.2 Diffusion Policy (Better Performance)
+Training takes ~8 hours on a good GPU. The model learns to replicate your demonstrations.
+
+## Advanced Options
+
+**Diffusion Model** - Better performance, slower training:
 
 ```bash
 python src/lerobot/scripts/lerobot_train.py \
-    --dataset.repo_id=your_name/task_name \
-    --policy.type=diffusion \
-    --policy.push_to_hub=false
+    --dataset.repo_id=myname/my_task \
+    --policy.type=diffusion
 ```
 
-## 3.3 Pi0 Policy
+**Other models available:** Pi0, Pi05, Groot (see [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) for details)
+
+# 4. 🎮 Testing Your Trained Model
+
+## Test in MuJoCo Simulation (No GPU Needed!) ⭐
+
+This is what we built together - a stable simulation you can run on any computer:
 
 ```bash
-python src/lerobot/scripts/lerobot_train.py \
-    --dataset.repo_id=your_name/task_name \
-    --policy.type=pi0 \
-    --policy.push_to_hub=false
+python unitree_lerobot/eval_robot/eval_g1_mujoco.py \
+    --policy.path=outputs/train/.../pretrained_model \
+    --repo_id=myname/my_task \
+    --frequency=30 \
+    --visualization=true
 ```
 
-## 3.4 Pi05 Policy (Vision-Language)
+**Why use this:**
+- ✅ Works on any computer (no GPU needed)
+- ✅ Robot won't fall down (we fixed this!)
+- ✅ Smooth, realistic movement
+- ✅ Easy to adjust if something seems off
+
+**Having issues?** See [MUJOCO_SIMULATION_GUIDE.md](./MUJOCO_SIMULATION_GUIDE.md) for fixes.
+
+## Test on Real Robot
+
+Once you're happy with simulation results:
 
 ```bash
-python src/lerobot/scripts/lerobot_train.py \
-    --dataset.repo_id=your_name/task_name \
-    --policy.type=pi05 \
-    --policy.pretrained_path=lerobot/pi05_base \
-    --policy.compile_model=true \
-    --policy.gradient_checkpointing=true \
-    --policy.dtype=bfloat16 \
-    --policy.push_to_hub=false
-```
-
-## 3.5 Groot Policy
-
-```bash
-python src/lerobot/scripts/lerobot_train.py \
-    --dataset.repo_id=your_name/task_name \
-    --policy.type=groot \
-    --policy.tune_diffusion_model=false \
-    --policy.push_to_hub=false
-```
-
-**Multi-GPU training:** See [LeRobot multi-GPU docs](https://github.com/huggingface/lerobot/blob/main/docs/source/multi_gpu_training.mdx)
-
-# 4. 🤖 Deployment and Evaluation
-
-## 4.1 Real Robot Deployment
-
-Deploy trained policy on physical Unitree G1:
-
-```bash
-# Start image server first (see avp_teleoperate docs)
-
 python unitree_lerobot/eval_robot/eval_g1.py \
     --policy.path=outputs/train/.../pretrained_model \
-    --repo_id=your_name/task_name \
+    --repo_id=myname/my_task \
     --arm="G1_29" \
     --ee="dex3" \
-    --frequency=30 \
-    --visualization=true \
     --send_real_robot=true
 ```
 
-## 4.2 IsaacLab Simulation
+**Important:** Always test in simulation first!
 
-Test in high-fidelity GPU simulation:
+## Alternative: IsaacLab Simulation (If You Have a GPU)
 
 ```bash
 python unitree_lerobot/eval_robot/eval_g1_sim.py \
     --policy.path=outputs/train/.../pretrained_model \
-    --repo_id=your_name/task_name \
-    --arm="G1_29" \
-    --ee="dex3" \
-    --frequency=30 \
-    --visualization=true
+    --repo_id=myname/my_task
 ```
 
-## 4.3 MuJoCo Simulation ⭐ NEW
+# 5. 💡 Common Issues & Solutions
 
-Test with CPU-friendly MuJoCo simulation:
+| Problem | Quick Fix |
+|---------|-----------|
+| **"401 Unauthorized" when loading datasets** | Run `huggingface-cli login` and enter your token |
+| **Robot falls in MuJoCo** | It's already fixed in our code! Just use the default settings |
+| **Training is slow** | Use ACT model instead of Diffusion, or reduce batch size |
+| **FFmpeg errors** | Run: `conda install -c conda-forge ffmpeg=7.1.1` |
+| **Out of memory** | Use a smaller model or enable gradient checkpointing |
+
+**Need more help?** Check [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) for detailed troubleshooting.
+
+# 6. 📚 What We Built Together
+
+This repository now includes:
+
+1. **Complete Documentation** (what you're reading!)
+   - Simple, clear explanations
+   - Step-by-step guides
+   - Available in English, Italian, and French
+
+2. **MuJoCo Simulation** (the fix for GPU-less testing)
+   - Prevents robot from falling
+   - Smooth, stable movements
+   - Works on any computer
+   - See [MUJOCO_SIMULATION_GUIDE.md](./MUJOCO_SIMULATION_GUIDE.md)
+
+3. **Helpful Guides**
+   - [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Commands and configs
+   - [ANALYSIS_SUMMARY.md](./ANALYSIS_SUMMARY.md) - Quick overview
+   - [WORKSPACE_ANALYSIS.md](./WORKSPACE_ANALYSIS.md) - Detailed structure
+   - [TECHNICAL_DEEP_DIVE.md](./TECHNICAL_DEEP_DIVE.md) - How it all works
+
+# 7. 🎯 Quick Example: End-to-End
+
+Here's the complete flow from start to finish:
 
 ```bash
-python unitree_lerobot/eval_robot/eval_g1_mujoco.py \
-    --policy.path=outputs/train/.../pretrained_model \
-    --repo_id=your_name/task_name \
-    --frequency=30 \
-    --kp_arm=100.0 \
-    --kd_arm=10.0 \
-    --use_gravity_compensation=true \
-    --visualization=true
-```
-
-**Why MuJoCo?**
-- ✅ No GPU required (runs on CPU)
-- ✅ Simple installation (`pip install mujoco`)
-- ✅ Stable physics with configurable PD gains
-- ✅ Prevents robot falling and random motion
-
-See [MUJOCO_SIMULATION_GUIDE.md](./MUJOCO_SIMULATION_GUIDE.md) for troubleshooting.
-
-## 4.4 Dataset Replay
-
-Replay dataset trajectories on robot:
-
-```bash
-python unitree_lerobot/eval_robot/replay_robot.py \
-    --repo_id=your_name/task_name \
-    --episodes=0 \
-    --frequency=30 \
-    --arm="G1_29" \
-    --ee="dex3" \
-    --visualization=true
-```
-
-## 4.5 Dataset Evaluation
-
-Evaluate policy on dataset:
-
-```bash
-python unitree_lerobot/eval_robot/eval_g1_dataset.py \
-    --policy.path=outputs/train/.../pretrained_model \
-    --repo_id=your_name/task_name \
-    --arm="G1_29" \
-    --ee="dex3" \
-    --visualization=true
-```
-
-# 5. 🔧 Configuration Reference
-
-## Robot Types
-
-| Type | Arms | End-Effector | DOF | Use Case |
-|------|------|--------------|-----|----------|
-| `Unitree_Z1_Single` | Single | Gripper | 7 | Desktop manipulation |
-| `Unitree_Z1_Dual` | Dual | Gripper | 14 | Bimanual tasks |
-| `Unitree_G1_Dex1` | Dual | 1-DOF gripper | 16 | Simple grasping |
-| `Unitree_G1_Dex3` | Dual | 7-DOF hand | 28 | Dexterous manipulation |
-| `Unitree_G1_Brainco` | Dual | BrainCo hand | 26 | Prosthetic research |
-| `Unitree_G1_Inspire` | Dual | Inspire1 hand | 26 | Advanced grasping |
-
-## Common Parameters
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `--arm` | `G1_29` | Robot version (`G1_29` or `G1_23`) |
-| `--ee` | `dex3` | End-effector (`dex3`, `dex1`, `inspire1`, `brainco`) |
-| `--frequency` | 30 | Control frequency (Hz) |
-| `--episodes` | 0 | Number of episodes (0 = infinite) |
-| `--visualization` | true | Enable 3D visualization |
-
-# 6. 🤔 Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| **401 Unauthorized (HuggingFace)** | Run `huggingface-cli login` |
-| **FFmpeg errors** | `conda install -c conda-forge ffmpeg=7.1.1` |
-| **Robot falls in MuJoCo** | Increase `--kp_leg` and enable `--use_gravity_compensation` |
-| **Random joint motion** | Lower `--kp_arm`, increase `--kd_arm`, reduce `--max_joint_velocity` |
-| **Slow training** | Reduce `--training.batch_size` or use smaller policy |
-| **GPU out of memory** | Enable `--policy.gradient_checkpointing=true` |
-
-See [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) for more troubleshooting.
-
-# 7. 📖 Learning Resources
-
-## Getting Started (Beginner)
-
-1. Read [ANALYSIS_SUMMARY.md](./ANALYSIS_SUMMARY.md) - Overview
-2. Load demo dataset (section 2.1)
-3. Visualize dataset
-4. Run MuJoCo simulation with pretrained model
-
-## Intermediate
-
-1. Collect own data with `avp_teleoperate`
-2. Convert to LeRobot format
-3. Train ACT policy
-4. Evaluate in simulation
-
-## Advanced
-
-1. Deploy on real robot
-2. Try different policies (Diffusion, Pi0, Groot)
-3. Add custom robot configuration
-4. Modify controllers for your hardware
-
-## Documentation Reading Order
-
-```
-1. ANALYSIS_SUMMARY.md       → Quick overview (5 min)
-2. WORKSPACE_ANALYSIS.md      → Understand structure (15 min)
-3. QUICK_REFERENCE.md         → Commands & examples (reference)
-4. MUJOCO_SIMULATION_GUIDE.md → Simulation setup (20 min)
-5. TECHNICAL_DEEP_DIVE.md     → Architecture details (30 min)
-```
-
-# 8. 🎬 Complete Example Workflow
-
-```bash
-# 1. Setup environment
+# 1. Setup (one time)
 conda create -y -n unitree_lerobot python=3.10
 conda activate unitree_lerobot
-# ... (see section 1.1)
+pip install mujoco
+# ... follow Step 1 above for full setup
 
-# 2. Convert your data
-python unitree_lerobot/utils/convert_unitree_json_to_lerobot.py \
-    --raw-dir $HOME/datasets/pick_apple \
-    --repo-id myname/pick_apple \
-    --robot_type Unitree_G1_Dex3 \
-    --push_to_hub
+# 2. Get some data (use example or record your own)
+# Already done if using: unitreerobotics/G1_Dex3_ToastedBread_Dataset
 
-# 3. Train policy
+# 3. Train the AI (8 hours)
 cd unitree_lerobot/lerobot
 python src/lerobot/scripts/lerobot_train.py \
-    --dataset.repo_id=myname/pick_apple \
+    --dataset.repo_id=unitreerobotics/G1_Dex3_ToastedBread_Dataset \
     --policy.type=act
 
-# 4. Test in MuJoCo simulation (no GPU needed!)
+# 4. Test it (immediate)
 cd ../..
 python unitree_lerobot/eval_robot/eval_g1_mujoco.py \
     --policy.path=unitree_lerobot/lerobot/outputs/.../pretrained_model \
-    --repo_id=myname/pick_apple \
-    --frequency=30
-
-# 5. Deploy on real robot
-python unitree_lerobot/eval_robot/eval_g1.py \
-    --policy.path=unitree_lerobot/lerobot/outputs/.../pretrained_model \
-    --repo_id=myname/pick_apple \
-    --arm="G1_29" \
-    --ee="dex3"
+    --repo_id=unitreerobotics/G1_Dex3_ToastedBread_Dataset
 ```
 
-# 9. 🙏 Acknowledgements
+That's it! You've taught a robot to do a task.
 
-This codebase builds upon these excellent open-source projects:
+# 8. 🌍 Languages & Support
 
-1. [LeRobot](https://github.com/huggingface/lerobot) - Training framework
-2. [unitree_sdk2_python](https://github.com/unitreerobotics/unitree_sdk2_python) - Robot communication
-3. [avp_teleoperate](https://github.com/unitreerobotics/avp_teleoperate) - Data collection
-4. [unitree_sim_isaaclab](https://github.com/unitreerobotics/unitree_sim_isaaclab) - Simulation
-5. [MuJoCo](https://github.com/google-deepmind/mujoco) - Physics simulation
+**This README is available in:**
+- [English](./README.md) (you are here)
+- [Italiano](./docs/README_it.md)
+- [Français](./docs/README_fr.md)
 
-# 10. 📞 Support
+**Get Help:**
+- Check the guides in this repository
+- Open an issue on GitHub
+- Join the [Discord community](https://discord.gg/ZwcVwxv5rq)
 
-- **Documentation:** Check docs in this repository
-- **Issues:** [GitHub Issues](https://github.com/karim7tr/unitree_IL_lerobot/issues)
-- **Discord:** [Unitree Community](https://discord.gg/ZwcVwxv5rq)
-- **Datasets:** [HuggingFace Hub](https://huggingface.co/unitreerobotics)
+# 9. 📄 License
 
-# 11. 📄 License
-
-Apache License 2.0 - See [LICENSE](./LICENSE) file
+Apache License 2.0 - Free to use for any purpose
 
 ---
 
 **Quick Links:**
-- [English README](./README.md) | [Italian README](./docs/README_it.md) | [French README](./docs/README_fr.md) | [Chinese README](./docs/README_zh.md)
+- [English README](./README.md) | [Italian README](./docs/README_it.md) | [French README](./docs/README_fr.md)
 - [MuJoCo Guide](./MUJOCO_SIMULATION_GUIDE.md) | [Quick Reference](./QUICK_REFERENCE.md) | [Technical Deep Dive](./TECHNICAL_DEEP_DIVE.md)

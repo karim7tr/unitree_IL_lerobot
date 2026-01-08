@@ -2,7 +2,7 @@
   <h1 align="center"> unitree_IL_lerobot </h1>
   <h3 align="center"> Unitree Robotics </h3>
   <p align="center">
-    <a href="../README.md"> English </a> | <a href="./README_it.md"> Italiano </a> | <a href="./README_fr.md"> Français </a> | <a href="./README_zh.md"> 中文 </a>
+    <a href="../README.md"> English </a> | <a href="./README_it.md"> Italiano </a> | <a href="./README_fr.md"> Français </a>
   </p>
     <p align="center">
      <a href="https://discord.gg/ZwcVwxv5rq" target="_blank"><img src="https://img.shields.io/badge/-Discord-5865F2?style=flat&logo=Discord&logoColor=white" alt="Unitree LOGO"></a>
@@ -420,5 +420,5 @@ Apache License 2.0 - Vedi file [LICENSE](../LICENSE)
 ---
 
 **Link Rapidi:**
-- [README Inglese](../README.md) | [README Italiano](./README_it.md) | [README Francese](./README_fr.md) | [README Cinese](./README_zh.md)
+- [README Inglese](../README.md) | [README Italiano](./README_it.md) | [README Francese](./README_fr.md)
 - [Guida MuJoCo](../MUJOCO_SIMULATION_GUIDE.md) | [Riferimento Rapido](../QUICK_REFERENCE.md) | [Approfondimento Tecnico](../TECHNICAL_DEEP_DIVE.md)
